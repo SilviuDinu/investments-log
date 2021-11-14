@@ -13,11 +13,9 @@ export default React.memo(function CurrencyInputField(props: any) {
   const [pickedData, setPickedData] = useState<PickerItem>();
 
   const data: Array<PickerItem> = [
-    { label: 'DataCat', value: 1 },
-    { label: 'DataDog', value: 2 },
-    { label: 'DataSnake', value: 3 },
-    { label: 'DataPlatypus', value: 4 },
-    { label: 'DataWhale', value: 5 },
+    { label: 'EUR', value: 1 },
+    { label: 'RON', value: 2 },
+    { label: 'USD', value: 3 }
   ];
 
   const handleInputFocus = useCallback(() => {
@@ -67,10 +65,7 @@ export default React.memo(function CurrencyInputField(props: any) {
             title="Data Picker"
             placeholder="Select Data"
             isNullable={false}
-            //backdropAnimation={{ opacity: 0 }}
-            //mode="dropdown"
-            //isNullable
-            //disable
+            mode="dropdown"
           />
         </View>
       </View>
@@ -89,7 +84,7 @@ const styles = StyleSheet.create({
   },
   inputField: {
     height: 40,
-    paddingHorizontal: 12,
+    // paddingHorizontal: 12,
     paddingVertical: 8,
     textAlign: 'center',
   },
@@ -105,8 +100,7 @@ const styles = StyleSheet.create({
   },
   currency: {
     width: '30%',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    height: 40,
     textAlign: 'center',
     display: 'flex',
     alignContent: 'center',
