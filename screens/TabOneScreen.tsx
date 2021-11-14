@@ -1,16 +1,52 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '../components/EditScreenInfo';
+import { Button, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import DatePicker from '../components/DatePicker';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
+import CurrencyInputField from '../components/CurrencyInputField';
+import CustomTitle from '../components/CustomTitle';
 
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+export default function TabOneScreen({
+  navigation,
+}: RootTabScreenProps<'TabOne'>) {
+  const [date, setDate] = useState<any>(new Date());
+  const [budgetAmount, setBudgetAmount] = useState<string>('');
+  const [showDatePicker, setShowDatePicker] = useState(true);
+
+  const onDateChange = (date: Date) => {
+    setDate(date);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
+      <Text style={styles.title}>New investment</Text>
+      <View
+        style={styles.separator}
+        lightColor="#eee"
+        darkColor="rgba(255,255,255,0.1)"
+      />
+      <View>
+        {/* <Button
+          onPress={() => setShowDatePicker(!showDatePicker)}
+          title="Show date picker!"
+        /> */}
+        <CustomTitle title="Pick a date" type="sectionTitle" />
+        {showDatePicker && <DatePicker date={date} setDate={onDateChange} />}
+      </View>
+      <View
+        style={styles.separator}
+        lightColor="#eee"
+        darkColor="rgba(255,255,255,0.1)"
+      />
+      <View>
+        <CustomTitle title="How much did you invest?" type="sectionTitle" />
+        <CurrencyInputField
+          value={budgetAmount}
+          onChangeValue={setBudgetAmount}
+          keyboardType={'numeric'}
+        />
+      </View>
     </View>
   );
 }
@@ -18,16 +54,17 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 24,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
   },
   separator: {
-    marginVertical: 30,
+    marginVertical: 24,
     height: 1,
-    width: '80%',
+    width: 320,
   },
 });
