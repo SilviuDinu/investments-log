@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { useState } from 'react';
 import DatePicker from '../components/DatePicker';
 import { Text, View } from '../components/Themed';
@@ -20,33 +20,39 @@ export default function TabOneScreen({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>New investment</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <View>
-        {/* <Button
+      <ScrollView keyboardShouldPersistTaps="handled">
+        <View style={styles.container}>
+          <Text style={styles.title}>New investment</Text>
+          <View
+            style={styles.separator}
+            lightColor="#eee"
+            darkColor="rgba(255,255,255,0.1)"
+          />
+          <View>
+            {/* <Button
           onPress={() => setShowDatePicker(!showDatePicker)}
           title="Show date picker!"
         /> */}
-        <CustomTitle title="Pick a date" type="sectionTitle" />
-        {showDatePicker && <DatePicker date={date} setDate={onDateChange} />}
-      </View>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <View>
-        <CustomTitle title="How much did you invest?" type="sectionTitle" />
-        <CurrencyInputField
-          value={budgetAmount}
-          onChangeValue={setBudgetAmount}
-          keyboardType={'numeric'}
-        />
-      </View>
+            <CustomTitle title="Pick a date" type="sectionTitle" />
+            {showDatePicker && (
+              <DatePicker date={date} setDate={onDateChange} />
+            )}
+          </View>
+          <View
+            style={styles.separator}
+            lightColor="#eee"
+            darkColor="rgba(255,255,255,0.1)"
+          />
+          <View>
+            <CustomTitle title="How much did you invest?" type="sectionTitle" />
+            <CurrencyInputField
+              value={budgetAmount}
+              onChangeValue={setBudgetAmount}
+              keyboardType={'numeric'}
+            />
+          </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -54,12 +60,12 @@ export default function TabOneScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 24,
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   title: {
     fontSize: 20,
+    marginTop: 24,
     fontWeight: 'bold',
   },
   separator: {
