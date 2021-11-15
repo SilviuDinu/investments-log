@@ -92,6 +92,7 @@ export default function TabOneScreen({
       details: inputFields,
       asset: selectedAsset,
     };
+    console.log('body = ', body)
     axios
       .post('/newRecord', { ...body })
       .then((response: any) => {
@@ -235,7 +236,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 64,
+    marginBottom: 150,
+    minHeight: '100%'
   },
   title: {
     fontSize: 20,
