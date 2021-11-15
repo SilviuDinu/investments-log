@@ -9,9 +9,13 @@ import { RootTabScreenProps } from '../types';
 import CurrencyInputField from '../components/CurrencyInputField';
 import CustomTitle from '../components/CustomTitle';
 import { PickerItem } from 'react-native-woodpicker';
-import useColorScheme from '../hooks/useColorScheme';
 import AssetsOptions from '../components/AssetsOptions';
 import axios from 'axios';
+
+let newRecordUrl =
+  process.env.NODE_ENV === 'production'
+    ? process.env.NEW_RECORD_URL || 'http://localhost:3000/newRecord'
+    : 'http://192.168.1.210:3000/newRecord';
 
 const pickerData: Array<PickerItem> = [
   { label: 'EUR', value: 1, icon: 'europe.svg' },
@@ -106,7 +110,7 @@ export default function TabOneScreen({
     };
     console.log('body = ', body);
     axios
-      .post('/newRecord', { ...body })
+      .post(newRecordUrl, { ...body })
       .then((response: any) => {
         console.log(response);
       })
