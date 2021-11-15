@@ -64,6 +64,8 @@ export default function TabOneScreen({
   const [inputFields, setInputFields] = useState<any>([
     { value: '', item: pickerData[0], currency: pickerData[0].label },
   ]);
+  // const isSubmitDisabled = React.useRef(false);
+
   const onDateChange = (date: Date) => {
     setDate(date);
   };
@@ -86,13 +88,23 @@ export default function TabOneScreen({
     setInputFields([...inputFields]);
   };
 
+  const getIsButtonDisabled = () => {
+    if (!date) {
+      return true;
+    }
+    if (!selectedAsset) {
+      return true;
+    }
+    return !!inputFields.find((field: any) => !field.value);
+  };
+
   const submitNewRecord = () => {
     let body: RequestBody = {
       date,
       details: inputFields,
       asset: selectedAsset,
     };
-    console.log('body = ', body)
+    console.log('body = ', body);
     axios
       .post('/newRecord', { ...body })
       .then((response: any) => {
@@ -104,8 +116,9 @@ export default function TabOneScreen({
   };
 
   React.useEffect(() => {
-    console.log(inputFields);
-  }, [inputFields]);
+    // const isDisabled = getIsButtonDisabled();
+    // console.log(isDisabled);
+  }, [inputFields, date, selectedAsset]);
 
   return (
     <View style={styles.container}>
@@ -222,6 +235,7 @@ export default function TabOneScreen({
             <Button
               style={{ width: 320, flex: 1 }}
               title="Submit"
+              disabled={getIsButtonDisabled()}
               onPress={submitNewRecord}></Button>
           </View>
         </View>
@@ -237,7 +251,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 150,
-    minHeight: '100%'
+    minHeight: '100%',
   },
   title: {
     fontSize: 20,
