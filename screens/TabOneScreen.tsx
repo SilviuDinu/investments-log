@@ -165,17 +165,19 @@ export default function TabOneScreen({
                 showDatePicker
                   ? {
                       name: 'done',
-                      size: 35,
+                      size: 25,
                       color: '#24a0ed',
                     }
                   : {
                       name: 'edit',
-                      size: 30,
+                      size: 25,
                       color: '#24a0ed',
                     }
               }
               onPress={() => setShowDatePicker(!showDatePicker)}
-              // title={showDatePicker ? 'Done' : 'Pick another date'}
+              iconPosition="right"
+              titleStyle={{ fontSize: 20, fontWeight: 'bold' }}
+              title={showDatePicker ? 'Done' : 'Edit'}
             />
           </View>
           <View
@@ -200,16 +202,18 @@ export default function TabOneScreen({
             ))}
             {inputFields.length <= 2 ? (
               <Button
-                style={{ width: 100, marginTop: 16 }}
+                style={{ width: 150, marginTop: 16 }}
                 type="clear"
                 disabled={inputFields.length >= 3}
                 icon={{
                   name: 'add',
-                  size: 35,
+                  size: 25,
                   color: '#24a0ed',
                 }}
+                iconPosition="right"
+                titleStyle={{ fontSize: 20, fontWeight: 'bold' }}
                 onPress={addNewField}
-                // title={showDatePicker ? 'Done' : 'Pick another date'}
+                title={'Add info'}
               />
             ) : null}
           </View>
