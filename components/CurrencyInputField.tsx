@@ -1,26 +1,17 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, Image } from 'react-native';
 import { View, TextInput, Text } from './Themed';
-import type { PickerItem } from 'react-native-woodpicker';
 import { Picker } from 'react-native-woodpicker';
 import useColorScheme from '../hooks/useColorScheme';
-import { Icon } from 'react-native-elements';
 import IMAGES from '../constants/flags';
 
-const data: Array<PickerItem> = [
-  { label: 'EUR', value: 1, icon: 'europe.svg' },
-  { label: 'RON', value: 2, icon: 'romania.svg' },
-  { label: 'USD', value: 3, icon: 'usa.svg' },
-];
-
 export default React.memo(function CurrencyInputField(props: any) {
-  const { value, onChangeValue } = props || {};
+  const { value, onChangeValue, onChangeCurrency, pickerData, pickedItem } =
+    props || {};
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [isFilled, setIsFilled] = useState<boolean>(!!value);
   // const amountInputRef = useRef<any>();
   const theme = useColorScheme();
-
-  const [pickedData, setPickedData] = useState<PickerItem>(data[0]);
 
   const handleInputFocus = useCallback(() => {
     setIsFocused(true);
@@ -30,6 +21,8 @@ export default React.memo(function CurrencyInputField(props: any) {
   const handleInputBlur = useCallback(() => {
     setIsFocused(false);
     setIsFilled(!!value);
+    // const formattedValue = formatter.current.format(value);
+    // onChangeValue(formattedValue);
   }, [value]);
 
   const handleInputChange = useCallback((text: any) => {
@@ -38,7 +31,7 @@ export default React.memo(function CurrencyInputField(props: any) {
   }, []);
 
   return (
-    <View style={{ width: '80%', maxWidth: 320, overflow: 'hidden' }}>
+    <View style={{ width: '100%', maxWidth: 320, overflow: 'hidden', marginTop: 16 }}>
       <View style={styles.flex}>
         <View
           lightColor="#eee"
@@ -50,7 +43,7 @@ export default React.memo(function CurrencyInputField(props: any) {
             isFocused={isFocused}
             value={value}
             placeholder="1,234.00"
-            onChangeText={handleInputChange}
+            onChangeText={onChangeValue}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
             keyboardType="numeric"
@@ -72,19 +65,20 @@ export default React.memo(function CurrencyInputField(props: any) {
               ...styles.inputField,
               borderColor: '#fff',
               // paddingRight: 8,
+              flex: 1,
             }}
-            item={pickedData}
-            items={data}
+            item={pickedItem}
+            items={pickerData}
             textInputStyle={textStyleInput[theme]}
             // containerStyle={{ paddingRight: 8 }}
-            onItemChange={setPickedData}
+            onItemChange={onChangeCurrency}
             title="Pick a currency"
             mode="dropdown"
           />
-          {pickedData && (
-            <View style={{ zIndex: -3 }}>
+          {pickedItem && (
+            <View style={{ zIndex: -3, flex: 0 }}>
               <Image
-                source={(IMAGES as any)[pickedData.label]}
+                source={(IMAGES as any)[pickedItem.label]}
                 style={{ width: 30, height: 20 }}
               />
             </View>
@@ -108,14 +102,14 @@ const pickerStyles = {
     light: {
       // width: '100%',
       // padding: 30,
-      paddingHorizontal: 8,
+      // paddingHorizontal: 8,
       backgroundColor: '#fff',
       color: '#000',
     },
     dark: {
       //  width: '100%',
       // padding: 30,
-      paddingHorizontal: 8,
+      // paddingHorizontal: 8,
       backgroundColor: '#000',
       color: '#fff',
     },
