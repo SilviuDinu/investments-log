@@ -124,10 +124,12 @@ export default function TabOneScreen({
     const body: RequestBody = {
       date: date,
       formattedDate: moment(date).format('LL'),
-      spendingDetails: inputFields.map((detail: any) => ({
-        value: detail.value,
-        currency: detail.currency,
-      })),
+      spendingDetails: inputFields
+        .filter((detail: any) => !!detail.value)
+        .map((detail: any) => ({
+          value: detail.value,
+          currency: detail.currency,
+        })),
       asset: selectedAsset.name,
       assetDetails: selectedAsset,
     };
