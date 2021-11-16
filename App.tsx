@@ -57,6 +57,21 @@ export default function App() {
     }
   }, [isLoggedIn]);
 
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     let token;
+  //     getTokenFromStorage()
+  //       .then((ret) => {
+  //         tokenRef.current = ret.token;
+  //         console.log('authToken in getTokenFromStorage', tokenRef.current);
+  //         setIsLoggedIn(!!tokenRef.current);
+  //       })
+  //       .catch((err) => {
+  //         throw new Error('user not found');
+  //       });
+  //   }
+  // });
+
   const handleLogin = () => {
     if (!password || !username) {
       return;
@@ -94,8 +109,6 @@ export default function App() {
       return config;
     },
     function (error) {
-      // Do something with request error
-      // console.log('error request interceptor', error, '===', error.status);
       return Promise.reject(error);
     }
   );
@@ -103,14 +116,21 @@ export default function App() {
   // Add a response interceptor
   axios.interceptors.response.use(
     function (response) {
-      return response;
-    },
-    function (error) {
-      // console.log('error response interceptor', error, '===', error.error);
-      if (isLoggedIn) {
+      if (response.status === 401) {
+        alert('You are not authorized');
         setIsLoggedIn(false);
         tokenRef.current = '';
         storage.remove({ key: 'authToken' });
+        return { error: 'Unauthorized' };
+      }
+      return response;
+    },
+    function (error) {
+      if (error?.response?.status === 401) {
+        storage.remove({ key: 'authToken' }).finally(() => {
+          tokenRef.current = '';
+          setIsLoggedIn(false);
+        });
       }
       return Promise.reject(error);
     }
