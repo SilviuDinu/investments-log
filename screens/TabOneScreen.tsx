@@ -11,6 +11,7 @@ import CustomTitle from '../components/CustomTitle';
 import { PickerItem } from 'react-native-woodpicker';
 import AssetsOptions from '../components/AssetsOptions';
 import axios from 'axios';
+import moment from 'moment';
 
 let newRecordUrl =
   process.env.NODE_ENV === 'production'
@@ -48,9 +49,11 @@ const assets: Array<{
 ];
 
 interface RequestBody {
-  date: string;
-  details: { value: string; item: Array<PickerItem>; currency: string }[];
-  asset: {
+  date: Date;
+  formattedDate: string;
+  spendingDetails: { value: string; currency: string }[];
+  asset: string;
+  assetDetails: {
     icon?: string;
     name: string;
     type?: string;
@@ -66,7 +69,7 @@ export default function TabOneScreen({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
   const [inputFields, setInputFields] = useState<any>([
-    { value: '', item: pickerData[0], currency: pickerData[0].label },
+    { value: '', currency: pickerData[0].label, item: pickerData[0] },
   ]);
   // const isSubmitDisabled = React.useRef(false);
 
@@ -103,19 +106,23 @@ export default function TabOneScreen({
   };
 
   const submitNewRecord = () => {
-    let body: RequestBody = {
-      date,
-      details: inputFields,
-      asset: selectedAsset,
+    const body: RequestBody = {
+      date: date,
+      formattedDate: moment(date).format('LL'),
+      spendingDetails: inputFields.map((detail: any) => ({
+        value: detail.value,
+        currency: detail.currency,
+      })),
+      asset: selectedAsset.name,
+      assetDetails: selectedAsset,
     };
-    console.log('body = ', body);
     axios
       .post(newRecordUrl, { ...body })
       .then((response: any) => {
-        console.log(response);
+        console.log(response.data);
       })
-      .catch((err: any) => {
-        console.error(err);
+      .catch((error: any) => {
+        Promise.reject(error);
       });
   };
 

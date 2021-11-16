@@ -16,6 +16,7 @@ import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import storage from './constants/storage';
+import { Button } from 'react-native-elements/dist/buttons/Button';
 // import { TextInput } from './components/Themed';
 
 const getTokenFromStorage = async () => {
@@ -57,20 +58,12 @@ export default function App() {
     }
   }, [isLoggedIn]);
 
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     let token;
-  //     getTokenFromStorage()
-  //       .then((ret) => {
-  //         tokenRef.current = ret.token;
-  //         console.log('authToken in getTokenFromStorage', tokenRef.current);
-  //         setIsLoggedIn(!!tokenRef.current);
-  //       })
-  //       .catch((err) => {
-  //         throw new Error('user not found');
-  //       });
-  //   }
-  // });
+  const handleLogout = () => {
+    storage.remove({ key: 'authToken' }).finally(() => {
+      tokenRef.current = '';
+      setIsLoggedIn(false);
+    });
+  };
 
   const handleLogin = () => {
     if (!password || !username) {
@@ -109,6 +102,14 @@ export default function App() {
       return config;
     },
     function (error) {
+      if (
+        error &&
+        (error.message.toLowerCase().includes('expired') ||
+          error.request?.status === 401 ||
+          error.message.toLowerCase().includes('network'))
+      ) {
+        handleLogout();
+      }
       return Promise.reject(error);
     }
   );
@@ -117,20 +118,17 @@ export default function App() {
   axios.interceptors.response.use(
     function (response) {
       if (response.status === 401) {
-        alert('You are not authorized');
-        setIsLoggedIn(false);
-        tokenRef.current = '';
-        storage.remove({ key: 'authToken' });
+        handleLogout();
         return { error: 'Unauthorized' };
       }
       return response;
     },
     function (error) {
-      if (error?.response?.status === 401) {
-        storage.remove({ key: 'authToken' }).finally(() => {
-          tokenRef.current = '';
-          setIsLoggedIn(false);
-        });
+      if (
+        error?.response?.status === 401 ||
+        error.message.toLowerCase().includes('network')
+      ) {
+        handleLogout();
       }
       return Promise.reject(error);
     }
@@ -156,6 +154,8 @@ export default function App() {
                   borderColor: '#000',
                   borderBottomWidth: 1,
                 }}
+                autoFocus={true}
+                autoCompleteType="username"
                 value={username}
                 onChangeText={setUsername}></TextInput>
               <TextInput
@@ -168,13 +168,19 @@ export default function App() {
                   borderColor: '#000',
                   borderBottomWidth: 1,
                 }}
+                autoCompleteType="password"
+                textContentType="password"
+                secureTextEntry={true}
                 value={password}
                 onChangeText={setPassword}></TextInput>
-              <Pressable
-                style={[styles.button, styles.buttonClose, { marginTop: 16 }]}
-                onPress={handleLogin}>
-                <Text style={styles.textStyle}>Submit</Text>
-              </Pressable>
+              <Button
+                style={[
+                  styles.button,
+                  styles.buttonClose,
+                  { marginTop: 24, width: 150 },
+                ]}
+                title="Submit"
+                onPress={handleLogin}></Button>
             </View>
           </View>
         </Modal>
@@ -209,8 +215,9 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   button: {
-    borderRadius: 20,
-    padding: 10,
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    height: 40,
     elevation: 2,
   },
   buttonOpen: {
