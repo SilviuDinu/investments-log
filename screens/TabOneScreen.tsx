@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { Image, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
 import { useState } from 'react';
@@ -12,11 +12,8 @@ import { PickerItem } from 'react-native-woodpicker';
 import AssetsOptions from '../components/AssetsOptions';
 import axios from 'axios';
 import moment from 'moment';
-
-let newRecordUrl =
-  process.env.NODE_ENV === 'production'
-    ? process.env.NEW_RECORD_URL || 'http://localhost:3000/newRecord'
-    : 'http://192.168.1.210:3000/newRecord';
+import PopUp from '../components/PopUp';
+import ENDPOINTS from '../constants/endpoints';
 
 const pickerData: Array<PickerItem> = [
   { label: 'EUR', value: 1, icon: 'europe.svg' },
@@ -38,7 +35,7 @@ const assets: Array<{
     iconHeight: 30,
   },
   {
-    icon: 'eth',
+    icon: 'ethereum',
     name: 'Ethereum',
     iconWidth: 15,
     iconHeight: 30,
@@ -62,6 +59,10 @@ interface RequestBody {
   };
 }
 
+const wait = (timeout: number) => {
+  return new Promise((resolve) => setTimeout(resolve, timeout));
+};
+
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<'TabOne'>) {
@@ -71,10 +72,24 @@ export default function TabOneScreen({
   const [inputFields, setInputFields] = useState<any>([
     { value: '', currency: pickerData[0].label, item: pickerData[0] },
   ]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
   // const isSubmitDisabled = React.useRef(false);
 
   const onDateChange = (date: Date) => {
     setDate(date);
+  };
+
+  const onRefresh = React.useCallback(() => {
+    resetData();
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
+
+  const resetData = () => {
+    setInputFields([
+      { value: '', currency: pickerData[0].label, item: pickerData[0] },
+    ]);
   };
 
   const addNewField = () => {
@@ -117,23 +132,46 @@ export default function TabOneScreen({
       assetDetails: selectedAsset,
     };
     axios
-      .post(newRecordUrl, { ...body })
+      .post(ENDPOINTS.NEW_RECORD_URL, { ...body })
       .then((response: any) => {
         console.log(response.data);
+        setShowSuccess(true);
+        setShowError(false);
+        resetData();
       })
       .catch((error: any) => {
+        if (error?.response?.status !== 401) {
+          setShowSuccess(false);
+          setShowError(true);
+        }
         Promise.reject(error);
       });
   };
 
-  React.useEffect(() => {
-    // const isDisabled = getIsButtonDisabled();
-    // console.log(isDisabled);
-  }, [inputFields, date, selectedAsset]);
-
   return (
     <View style={styles.container}>
-      <ScrollView keyboardShouldPersistTaps="handled" style={{ width: '100%' }}>
+      {showSuccess && (
+        <PopUp
+          status="success"
+          text="Successfully inserted a new record"
+          buttonText="Nice"
+          onSubmit={() => setShowSuccess(false)}
+        />
+      )}
+      {showError && (
+        <PopUp
+          status="error"
+          text="Something went wrong with your request"
+          buttonText="Close"
+          onSubmit={() => setShowError(false)}
+        />
+      )}
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        style={{ width: '100%' }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         <View style={styles.container}>
           <Text style={styles.title}>New investment</Text>
           <View
@@ -264,7 +302,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     marginBottom: 150,
     minHeight: '100%',
   },

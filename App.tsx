@@ -2,21 +2,14 @@ import axios from 'axios';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import {
-  Alert,
-  Modal,
-  StyleSheet,
-  Text,
-  Pressable,
-  View,
-  TextInput,
-} from 'react-native';
+import { Modal, StyleSheet, Text, View, TextInput } from 'react-native';
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import storage from './constants/storage';
 import { Button } from 'react-native-elements/dist/buttons/Button';
+import ENDPOINTS from './constants/endpoints';
 // import { TextInput } from './components/Themed';
 
 const getTokenFromStorage = async () => {
@@ -24,11 +17,6 @@ const getTokenFromStorage = async () => {
     key: 'authToken',
   });
 };
-
-let authUrl =
-  process.env.NODE_ENV === 'production'
-    ? process.env.NEW_RECORD_URL || 'http://localhost:3000/auth'
-    : 'http://192.168.1.210:3000/auth';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -52,7 +40,7 @@ export default function App() {
             setIsLoggedIn(!!tokenRef.current);
           })
           .catch((err) => {
-            throw new Error('user not found');
+            console.error('User not found');
           });
       }
     }
@@ -70,7 +58,7 @@ export default function App() {
       return;
     }
     axios
-      .post(authUrl, { username, password })
+      .post(ENDPOINTS.AUTH_URL, { username, password })
       .then((response: any) => {
         tokenRef.current = response.data.token;
         console.log('token from response', tokenRef.current);
@@ -102,6 +90,7 @@ export default function App() {
       return config;
     },
     function (error) {
+      console.log(error.message)
       if (
         error &&
         (error.message.toLowerCase().includes('expired') ||

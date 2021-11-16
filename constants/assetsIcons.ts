@@ -1,6 +1,19 @@
-enum ICONS {
+export enum ICONS {
   bitcoin = require('../assets/images/bitcoin.svg'),
-  eth = require('../assets/images/eth.png'),
+  ethereum = require('../assets/images/eth.png'),
 }
 
-export default ICONS;
+export const iconsSizes = [
+  {
+    icon: 'bitcoin',
+    name: 'Bitcoin',
+    iconWidth: 30,
+    iconHeight: 30,
+  },
+  {
+    icon: 'ethereum',
+    name: 'Ethereum',
+    iconWidth: 15,
+    iconHeight: 30,
+  },
+];

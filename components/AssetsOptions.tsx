@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Image } from 'react-native';
-import { Button } from 'react-native-elements';
-import ICONS from '../constants/assetsIcons';
+import { Button, Icon } from 'react-native-elements';
+import { ICONS } from '../constants/assetsIcons';
 import { View } from './Themed';
 
 const AssetsOptions = React.memo((props: any) => {
