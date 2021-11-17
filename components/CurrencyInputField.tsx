@@ -31,7 +31,13 @@ export default React.memo(function CurrencyInputField(props: any) {
   }, []);
 
   return (
-    <View style={{ width: '100%', maxWidth: 320, overflow: 'hidden', marginTop: 16 }}>
+    <View
+      style={{
+        width: '100%',
+        maxWidth: 320,
+        overflow: 'hidden',
+        marginTop: 16,
+      }}>
       <View style={styles.flex}>
         <View
           lightColor="#eee"
@@ -60,21 +66,24 @@ export default React.memo(function CurrencyInputField(props: any) {
           }}
           lightColor="#eee"
           darkColor="rgba(255,255,255,0.1)">
-          <Picker
-            style={{
-              ...styles.inputField,
-              borderColor: '#fff',
-              // paddingRight: 8,
-              flex: 1,
-            }}
-            item={pickedItem}
-            items={pickerData}
-            textInputStyle={textStyleInput[theme]}
-            // containerStyle={{ paddingRight: 8 }}
-            onItemChange={onChangeCurrency}
-            title="Pick a currency"
-            mode="dropdown"
-          />
+          {pickerData.length > 0 && (
+            <Picker
+              style={{
+                ...styles.inputField,
+                borderColor: '#fff',
+                // paddingRight: 8,
+                flex: 1,
+              }}
+              item={pickedItem}
+              items={pickerData}
+              textInputStyle={textStyleInput[theme]}
+              // containerStyle={{ paddingRight: 8 }}
+              onItemChange={onChangeCurrency}
+              title="Pick a currency"
+              mode="dropdown"
+            />
+          )}
+
           {pickedItem && (
             <View style={{ zIndex: -3, flex: 0 }}>
               <Image

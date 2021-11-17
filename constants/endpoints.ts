@@ -5,6 +5,7 @@ enum ENDPOINTS {
   ASSET_RECORDS_URL = 'https://investments-log-backend.herokuapp.com/records/',
   EXPENSES_RECORDS_URL = 'https://investments-log-backend.herokuapp.com/expenses/',
   RECORDS_SUMMARY_URL = 'https://investments-log-backend.herokuapp.com/records-summary',
+  ASSETS_URL = 'https://investments-log-backend.herokuapp.com/assets'
 }
 
 export default ENDPOINTS;

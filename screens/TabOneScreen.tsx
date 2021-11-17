@@ -21,7 +21,7 @@ const pickerData: Array<PickerItem> = [
   { label: 'USD', value: 3, icon: 'usa.svg' },
 ];
 
-const assets: Array<{
+const staticAssets: Array<{
   icon?: string;
   name: string;
   type?: string;
@@ -68,13 +68,14 @@ export default function TabOneScreen({
 }: RootTabScreenProps<'TabOne'>) {
   const [date, setDate] = useState<any>(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState(assets[0]);
   const [inputFields, setInputFields] = useState<any>([
     { value: '', currency: pickerData[0].label, item: pickerData[0] },
   ]);
   const [refreshing, setRefreshing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [assets, setAssets] = useState<any>([]);
   const [showError, setShowError] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<any>(assets[0] || null);
   // const isSubmitDisabled = React.useRef(false);
 
   const onDateChange = (date: Date) => {
@@ -90,12 +91,18 @@ export default function TabOneScreen({
     setInputFields([
       { value: '', currency: pickerData[0].label, item: pickerData[0] },
     ]);
+    setAssets([]);
+    setSelectedAsset(null);
   };
 
   const addNewField = () => {
     setInputFields((inputFields: any) => [
       ...inputFields,
-      { value: '', item: pickerData[0], currency: pickerData[0].label },
+      {
+        value: '',
+        item: pickerData[inputFields.length],
+        currency: pickerData[inputFields.length].label,
+      },
     ]);
   };
 
@@ -120,6 +127,21 @@ export default function TabOneScreen({
     return !!inputFields.find((field: any) => !field.value);
   };
 
+  React.useEffect(() => {
+    if (!assets || !assets.length) {
+      axios
+        .get(ENDPOINTS.ASSETS_URL)
+        .then((response) => {
+          setAssets(response.data);
+          setSelectedAsset(response.data[0]);
+        })
+        .catch((err) => {
+          setAssets([...staticAssets]);
+          setSelectedAsset(staticAssets[0]);
+        });
+    }
+  }, [assets]);
+
   const submitNewRecord = () => {
     const body: RequestBody = {
       date: date,
@@ -127,7 +149,7 @@ export default function TabOneScreen({
       spendingDetails: inputFields
         .filter((detail: any) => !!detail.value)
         .map((detail: any) => ({
-          value: detail.value,
+          value: detail.value.replace(/,/, '.'),
           currency: detail.currency,
         })),
       asset: selectedAsset.name,
