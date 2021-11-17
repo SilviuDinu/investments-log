@@ -30,13 +30,11 @@ export default function App() {
     if (!isLoggedIn) {
       if (tokenRef.current && typeof tokenRef.current === 'string') {
         const token = tokenRef.current;
-        console.log('authToken in useEffect', tokenRef.current);
         setIsLoggedIn(!!token);
       } else {
         getTokenFromStorage()
           .then((ret) => {
             tokenRef.current = ret.token;
-            console.log('authToken in getTokenFromStorage', tokenRef.current);
             setIsLoggedIn(!!tokenRef.current);
           })
           .catch((err) => {
@@ -61,7 +59,6 @@ export default function App() {
       .post(ENDPOINTS.AUTH_URL, { username, password })
       .then((response: any) => {
         tokenRef.current = response.data.token;
-        console.log('token from response', tokenRef.current);
         if (tokenRef.current) {
           storage
             .save({
@@ -90,7 +87,6 @@ export default function App() {
       return config;
     },
     function (error) {
-      console.log(error.message)
       if (
         error &&
         (error.message.toLowerCase().includes('expired') ||
@@ -113,10 +109,7 @@ export default function App() {
       return response;
     },
     function (error) {
-      if (
-        error?.response?.status === 401 ||
-        error.message.toLowerCase().includes('network')
-      ) {
+      if (error?.response?.status === 401 || error.message.toLowerCase().includes('network')) {
         handleLogout();
       }
       return Promise.reject(error);
@@ -163,11 +156,7 @@ export default function App() {
                 value={password}
                 onChangeText={setPassword}></TextInput>
               <Button
-                style={[
-                  styles.button,
-                  styles.buttonClose,
-                  { marginTop: 24, width: 150 },
-                ]}
+                style={[styles.button, styles.buttonClose, { marginTop: 24, width: 150 }]}
                 title="Submit"
                 onPress={handleLogin}></Button>
             </View>

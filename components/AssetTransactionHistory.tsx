@@ -60,17 +60,12 @@ const AssetTransactionHistory = React.memo((props: any) => {
             <Text>{moment(elem.date).format('HH:mm')}</Text>
           </NativeView>
         </NativeView>
-        <NativeView style={{alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+        <NativeView style={{alignItems: 'flex-end', justifyContent: 'center'}}>
           {elem.spendingDetails.map((detail: any, i: number) => (
             <Text key={i}>{`-${detail.value} ${detail.currency}`}</Text>
           ))}
         </NativeView>
       </NativeView>
-      <View
-        style={styles.cardSeparator}
-        lightColor="lightgray"
-        darkColor="lightgray"
-      />
     </NativeView>
   );
 });

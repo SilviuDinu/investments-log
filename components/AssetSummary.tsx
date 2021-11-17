@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     width: 320,
   },
   cardSeparator: {
-    marginVertical: 24,
+    marginVertical: 16,
     height: 1,
     width: '100%%',
   },

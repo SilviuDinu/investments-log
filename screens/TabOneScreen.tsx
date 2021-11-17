@@ -158,7 +158,6 @@ export default function TabOneScreen({
     axios
       .post(ENDPOINTS.NEW_RECORD_URL, { ...body })
       .then((response: any) => {
-        console.log(response.data);
         setShowSuccess(true);
         setShowError(false);
         resetData();

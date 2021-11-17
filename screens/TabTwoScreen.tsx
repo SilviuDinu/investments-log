@@ -1,15 +1,11 @@
 import axios from 'axios';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import {
-  Image,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View as NativeView,
-} from 'react-native';
+import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, View as NativeView } from 'react-native';
 import { Icon, Tooltip } from 'react-native-elements';
+import { Button } from 'react-native-elements/dist/buttons/Button';
+import { RectButton, Swipeable } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 import AssetSummary from '../components/AssetSummary';
 import AssetTransactionHistory from '../components/AssetTransactionHistory';
 import { Text, View } from '../components/Themed';
@@ -40,6 +36,49 @@ export default function TabTwoScreen() {
     setExpanded({ ...expanded, [name]: expanded[name] });
   };
 
+  const handleSwipeRight = (_id: any) => {
+    console.log('Swipe right');
+    axios
+      .delete(`${ENDPOINTS.DELETE_URL}${_id}`)
+      .then((response) => {
+        const { data } = response;
+        const element = investments.records.find((record: any) => record._id === data._id);
+        const index = investments.records.indexOf(element);
+        investments.records.splice(index, 1);
+        setInvestments({ ...investments });
+      })
+      .catch((error) => {
+        console.error('Summary error', error);
+      });
+  };
+
+  const renderRightActions = (_id: any) => {
+    return (
+      <View
+        style={{
+          backgroundColor: 'red',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: 100,
+          height: '100%',
+          marginLeft: 8,
+        }}>
+        <Button
+          title={
+            <Text
+              style={{
+                color: 'white',
+                paddingHorizontal: 6,
+                fontWeight: '600',
+              }}>
+              Delete
+            </Text>
+          }
+          onPress={() => handleSwipeRight(_id)}></Button>
+      </View>
+    );
+  };
+
   useEffect(() => {
     if (!investments || !Object.keys(investments).length) {
       axios
@@ -63,29 +102,26 @@ export default function TabTwoScreen() {
       <ScrollView
         keyboardShouldPersistTaps="handled"
         style={{ width: '100%' }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View style={styles.container}>
           <Text style={styles.title}>Your investments</Text>
-          <View
-            style={styles.separator}
-            lightColor="#eee"
-            darkColor="rgba(255,255,255,0.1)"
-          />
+          <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
           {investments?.summary?.map((item: any, index: number) => (
-            <Pressable
-              key={index}
-              onPress={() => handleExpanded(index, item.asset)}>
+            <Pressable key={index} onPress={() => handleExpanded(index, item.asset)}>
               <AssetSummary item={item} expanded={expanded[item.asset]}>
                 {investments?.records
                   ?.filter((e: any) => e.asset === item.asset)
                   .map((elem: any, idx: number) => (
-                    <AssetTransactionHistory
-                      key={idx}
-                      elem={elem}
-                      itemAsset={item.asset}
-                    />
+                    <NativeView key={idx}>
+                      <Swipeable
+                        key={idx}
+                        renderRightActions={(progress: any, dragX: any) => renderRightActions(elem._id)}
+                        overshootRight
+                        enableTrackpadTwoFingerGesture>
+                        <AssetTransactionHistory elem={elem} itemAsset={item.asset} />
+                      </Swipeable>
+                      <View style={styles.cardSeparator} lightColor="lightgray" darkColor="lightgray" />
+                    </NativeView>
                   ))}
               </AssetSummary>
             </Pressable>
